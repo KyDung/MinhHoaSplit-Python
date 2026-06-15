@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Minh họa từng bước hàm split(sep)</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 30px;
+        font-family: Arial, sans-serif;
+        background: #eef4ff;
+        color: #0f172a;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: auto;
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+      }
+
+      h1 {
+        text-align: center;
+        color: #1d4ed8;
+        margin-top: 0;
+      }
+
+      .note {
+        background: #dbeafe;
+        border-left: 6px solid #2563eb;
+        padding: 15px;
+        border-radius: 10px;
+        line-height: 1.7;
+        font-size: 17px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 8px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        border: 2px solid #cbd5e1;
+        border-radius: 10px;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: 1fr 180px;
+        gap: 14px;
+      }
+
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      button {
+        padding: 13px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        background: #2563eb;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      button.secondary {
+        background: #475569;
+      }
+
+      button.secondary:hover {
+        background: #334155;
+      }
+
+      button.danger {
+        background: #dc2626;
+      }
+
+      button.danger:hover {
+        background: #b91c1c;
+      }
+
+      button.green {
+        background: #16a34a;
+      }
+
+      button.green:hover {
+        background: #15803d;
+      }
+
+      .code {
+        margin-top: 22px;
+        background: #111827;
+        color: #22c55e;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 19px;
+        font-family: Consolas, monospace;
+      }
+
+      .section {
+        margin-top: 28px;
+      }
+
+      .title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .step-info {
+        background: #fef3c7;
+        border-left: 6px solid #f59e0b;
+        padding: 14px;
+        border-radius: 10px;
+        line-height: 1.7;
+        font-size: 17px;
+        margin-top: 15px;
+      }
+
+      .string-box {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 18px;
+        border: 2px dashed #94a3b8;
+        border-radius: 12px;
+        background: #f8fafc;
+        min-height: 90px;
+        align-items: center;
+      }
+
+      .char-box {
+        width: 48px;
+        height: 58px;
+        border: 2px solid #cbd5e1;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        font-weight: bold;
+        font-size: 22px;
+        transition: 0.25s;
+      }
+
+      .char-index {
+        position: absolute;
+        bottom: -20px;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: normal;
+      }
+
+      .char-box.done {
+        opacity: 0.45;
+        background: #e2e8f0;
+      }
+
+      .char-box.reading {
+        border-color: #2563eb;
+        background: #dbeafe;
+        transform: translateY(-6px);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+      }
+
+      .char-box.next {
+        outline: 3px solid #facc15;
+      }
+
+      .char-box.separator {
+        border-color: #ef4444;
+        background: #fee2e2;
+        color: #991b1b;
+        animation: cutShake 0.45s ease;
+      }
+
+      .char-box.separator::after {
+        content: "✂";
+        position: absolute;
+        top: -28px;
+        font-size: 24px;
+        animation: scissors 0.5s ease;
+      }
+
+      @keyframes cutShake {
+        0% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-8deg);
+        }
+        50% {
+          transform: rotate(8deg);
+        }
+        75% {
+          transform: rotate(-5deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @keyframes scissors {
+        0% {
+          transform: scale(0.5) translateY(10px);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .empty-string {
+        color: #dc2626;
+        font-style: italic;
+        padding: 12px;
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 20px;
+      }
+
+      .panel {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 16px;
+        min-height: 120px;
+      }
+
+      .panel h3 {
+        margin-top: 0;
+        color: #1e40af;
+      }
+
+      .buffer {
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .buffer-char {
+        background: #dbeafe;
+        border: 2px solid #2563eb;
+        color: #1e3a8a;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .result-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        min-height: 56px;
+        align-items: center;
+      }
+
+      .part-box {
+        background: #dcfce7;
+        border: 2px solid #16a34a;
+        color: #14532d;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: bold;
+        position: relative;
+        animation: pop 0.35s ease;
+        min-width: 60px;
+        text-align: center;
+      }
+
+      .part-box.empty {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #991b1b;
+        font-style: italic;
+      }
+
+      .part-index {
+        position: absolute;
+        top: -13px;
+        right: -10px;
+        background: #2563eb;
+        color: white;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-style: normal;
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(0.7);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .python-output {
+        margin-top: 18px;
+        background: #0f172a;
+        color: #e5e7eb;
+        padding: 15px;
+        border-radius: 10px;
+        font-family: Consolas, monospace;
+        font-size: 18px;
+        word-break: break-word;
+      }
+
+      .examples {
+        margin-top: 20px;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 15px;
+      }
+
+      .example-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .example-buttons button {
+        width: auto;
+        padding: 10px 12px;
+        font-size: 14px;
+        background: #475569;
+      }
+
+      @media (max-width: 800px) {
+        .input-row,
+        .panel-grid,
+        .buttons {
+          grid-template-columns: 1fr;
+        }
+
+        .char-box {
+          width: 42px;
+          height: 54px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Minh họa từng bước hàm split(sep)</h1>
+
+      <div class="note">
+        Ý tưởng: Python quét chuỗi từ trái sang phải. Các kí tự bình thường sẽ
+        được gom vào một mảnh tạm. Khi gặp <b>sep</b>, Python sẽ <b>cắt</b>, đưa
+        mảnh tạm vào list kết quả, rồi bắt đầu gom mảnh mới.
+      </div>
+
+      <div class="input-row">
+        <div>
+          <label>Chuỗi gốc s:</label>
+          <input id="inputString" value="cam,,tao,chuoi," />
+        </div>
+
+        <div>
+          <label>Tham số sep:</label>
+          <input id="separatorInput" value="," />
+        </div>
+      </div>
+
+      <div class="examples">
+        <b>Ví dụ nhanh:</b>
+        <div class="example-buttons">
+          <button onclick="setExample('cam,tao,chuoi', ',')">
+            cam,tao,chuoi
+          </button>
+          <button onclick="setExample('cam,,tao,chuoi,', ',')">
+            cam,,tao,chuoi,
+          </button>
+          <button onclick="setExample('-cam-tao-', '-')">-cam-tao-</button>
+          <button onclick="setExample('duongdi-vatcan-duongdi', '-')">
+            duongdi-vatcan-duongdi
+          </button>
+          <button onclick="setExample('aXXbXXc', 'XX')">aXXbXXc</button>
+          <button onclick="setExample('aXXXXb', 'XX')">aXXXXb</button>
+        </div>
+      </div>
+
+      <div class="code" id="codeBox">s.split(",")</div>
+
+      <div class="section">
+        <div class="title-row">
+          <h2>1. Chuỗi gốc được tách thành từng ô kí tự</h2>
+        </div>
+        <div class="string-box" id="stringView"></div>
+      </div>
+
+      <div class="buttons">
+        <button onclick="startDemo()">Bắt đầu lại</button>
+        <button class="green" onclick="nextStep()">Bước tiếp theo</button>
+        <button class="secondary" onclick="autoRun()">Chạy tự động</button>
+        <button class="danger" onclick="stopAuto()">Dừng</button>
+      </div>
+
+      <div class="step-info" id="stepInfo">
+        Bấm <b>Bắt đầu lại</b>, sau đó bấm <b>Bước tiếp theo</b> để quan sát quá
+        trình split.
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <h3>Mảnh đang gom</h3>
+          <div class="buffer" id="bufferView"></div>
+        </div>
+
+        <div class="panel">
+          <h3>List kết quả</h3>
+          <div class="result-list" id="resultView"></div>
+        </div>
+      </div>
+
+      <div class="python-output" id="pythonOutput">Kết quả kiểu Python: []</div>
+    </div>
+
+    <script>
+      let state = null;
+      let timer = null;
+
+      function escapeHTML(text) {
+        return text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function displayChar(ch) {
+        if (ch === " ") return "␠";
+        if (ch === "\t") return "⇥";
+        return ch;
+      }
+
+      function setExample(s, sep) {
+        document.getElementById("inputString").value = s;
+        document.getElementById("separatorInput").value = sep;
+        startDemo();
+      }
+
+      function startDemo() {
+        stopAuto();
+
+        const s = document.getElementById("inputString").value;
+        const sep = document.getElementById("separatorInput").value;
+
+        if (sep === "") {
+          alert(
+            "Trong Python, split('') bị lỗi. Tham số sep không được là xâu rỗng.",
+          );
+          return;
+        }
+
+        state = {
+          s: s,
+          sep: sep,
+          i: 0,
+          buffer: "",
+          parts: [],
+          done: false,
+          step: 0,
+          lastAction: {
+            type: "start",
+            index: 0,
+            length: 0,
+            text: "Bắt đầu quét chuỗi từ trái sang phải.",
+          },
+        };
+
+        render();
+      }
+
+      function nextStep() {
+        if (state === null) {
+          startDemo();
+          return;
+        }
+
+        if (state.done) {
+          renderMessage(
+            "Đã hoàn thành. Bấm <b>Bắt đầu lại</b> để chạy lại từ đầu.",
+          );
+          return;
+        }
+
+        const s = state.s;
+        const sep = state.sep;
+        const i = state.i;
+
+        state.step++;
+
+        // Khi đã quét hết chuỗi, đưa mảnh cuối cùng vào list
+        if (i >= s.length) {
+          const finalPart = state.buffer;
+          state.parts.push(finalPart);
+          state.buffer = "";
+          state.done = true;
+
+          state.lastAction = {
+            type: "finish",
+            index: i,
+            length: 0,
+            part: finalPart,
+            text: `Đã quét hết chuỗi. Đưa mảnh cuối cùng <b>${showPart(finalPart)}</b> vào list kết quả.`,
+          };
+
+          render();
+          return;
+        }
+
+        // Nếu tại vị trí hiện tại bắt đầu bằng sep thì cắt
+        if (s.startsWith(sep, i)) {
+          const cutPart = state.buffer;
+
+          state.parts.push(cutPart);
+          state.buffer = "";
+
+          state.lastAction = {
+            type: "cut",
+            index: i,
+            length: sep.length,
+            part: cutPart,
+            text: `Gặp sep = <b>"${escapeHTML(sep)}"</b> tại vị trí ${i}. Cắt tại đây và đưa <b>${showPart(cutPart)}</b> vào list kết quả.`,
+          };
+
+          state.i += sep.length;
+          render();
+          return;
+        }
+
+        // Nếu không phải sep thì gom kí tự hiện tại vào mảnh tạm
+        const ch = s[i];
+        state.buffer += ch;
+
+        state.lastAction = {
+          type: "read",
+          index: i,
+          length: 1,
+          char: ch,
+          text: `Kí tự <b>"${escapeHTML(displayChar(ch))}"</b> không phải sep, nên đưa vào mảnh đang gom.`,
+        };
+
+        state.i++;
+        render();
+      }
+
+      function showPart(part) {
+        if (part === "") return "<span style='color:#dc2626'>''</span>";
+        return `"${escapeHTML(part)}"`;
+      }
+
+      function render() {
+        if (!state) return;
+
+        document.getElementById("codeBox").innerText =
+          `s.split("${state.sep}")`;
+
+        renderString();
+        renderBuffer();
+        renderResult();
+        renderPythonOutput();
+
+        document.getElementById("stepInfo").innerHTML =
+          `<b>Bước ${state.step}:</b> ${state.lastAction.text}`;
+      }
+
+      function renderMessage(message) {
+        document.getElementById("stepInfo").innerHTML = message;
+      }
+
+      function renderString() {
+        const view = document.getElementById("stringView");
+        view.innerHTML = "";
+
+        const s = state.s;
+
+        if (s.length === 0) {
+          view.innerHTML = `<span class="empty-string">Chuỗi rỗng</span>`;
+          return;
+        }
+
+        for (let idx = 0; idx < s.length; idx++) {
+          const box = document.createElement("div");
+          box.className = "char-box";
+
+          const last = state.lastAction;
+
+          if (idx < state.i) {
+            box.classList.add("done");
+          }
+
+          if (!state.done && idx === state.i) {
+            box.classList.add("next");
+          }
+
+          if (last.type === "read" && idx === last.index) {
+            box.classList.remove("done");
+            box.classList.add("reading");
+          }
+
+          if (
+            last.type === "cut" &&
+            idx >= last.index &&
+            idx < last.index + last.length
+          ) {
+            box.classList.remove("done");
+            box.classList.add("separator");
+          }
+
+          box.innerHTML = `
+          <div>${escapeHTML(displayChar(s[idx]))}</div>
+          <div class="char-index">${idx}</div>
+        `;
+
+          view.appendChild(box);
+        }
+      }
+
+      function renderBuffer() {
+        const view = document.getElementById("bufferView");
+        view.innerHTML = "";
+
+        if (state.buffer === "") {
+          view.innerHTML = `<span class="empty-string">Chưa có kí tự nào, tức là mảnh hiện tại là ''</span>`;
+          return;
+        }
+
+        for (const ch of state.buffer) {
+          const box = document.createElement("div");
+          box.className = "buffer-char";
+          box.innerText = displayChar(ch);
+          view.appendChild(box);
+        }
+      }
+
+      function renderResult() {
+        const view = document.getElementById("resultView");
+        view.innerHTML = "";
+
+        if (state.parts.length === 0) {
+          view.innerHTML = `<span class="empty-string">List đang rỗng</span>`;
+          return;
+        }
+
+        state.parts.forEach((part, index) => {
+          const box = document.createElement("div");
+          box.className = "part-box";
+
+          if (part === "") {
+            box.classList.add("empty");
+            box.innerHTML = `''<span class="part-index">${index}</span>`;
+          } else {
+            box.innerHTML = `${escapeHTML(part)}<span class="part-index">${index}</span>`;
+          }
+
+          view.appendChild(box);
+        });
+      }
+
+      function renderPythonOutput() {
+        const output =
+          "[" +
+          state.parts
+            .map((part) => {
+              return (
+                "'" + part.replaceAll("\\", "\\\\").replaceAll("'", "\\'") + "'"
+              );
+            })
+            .join(", ") +
+          "]";
+
+        document.getElementById("pythonOutput").innerText =
+          "Kết quả hiện tại kiểu Python: " + output;
+      }
+
+      function autoRun() {
+        if (state === null || state.done) {
+          startDemo();
+        }
+
+        stopAuto();
+
+        timer = setInterval(() => {
+          if (!state || state.done) {
+            stopAuto();
+            return;
+          }
+          nextStep();
+        }, 900);
+      }
+
+      function stopAuto() {
+        if (timer !== null) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      startDemo();
+    </script>
+  </body>
+</html>
