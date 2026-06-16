@@ -2,6 +2,11 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Minh họa trực quan từng bước cách Python xử lý hàm split(sep)."
+    />
     <title>Minh họa từng bước hàm split(sep)</title>
 
     <style>
@@ -11,18 +16,19 @@
 
       body {
         margin: 0;
-        padding: 30px;
+        padding: clamp(12px, 3vw, 30px);
         font-family: Arial, sans-serif;
         background: #eef4ff;
         color: #0f172a;
       }
 
       .container {
+        width: 100%;
         max-width: 1100px;
         margin: auto;
         background: white;
         border-radius: 18px;
-        padding: 28px;
+        padding: clamp(16px, 3vw, 28px);
         box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
       }
 
@@ -51,16 +57,49 @@
 
       input {
         width: 100%;
+        min-width: 0;
         padding: 12px;
         font-size: 18px;
         border: 2px solid #cbd5e1;
         border-radius: 10px;
       }
 
+      input[aria-invalid="true"] {
+        border-color: #dc2626;
+        background: #fef2f2;
+      }
+
+      input:focus-visible,
+      select:focus-visible,
+      button:focus-visible {
+        outline: 3px solid #facc15;
+        outline-offset: 3px;
+      }
+
       .input-row {
         display: grid;
         grid-template-columns: 1fr 180px;
         gap: 14px;
+      }
+
+      .input-row > div,
+      .panel-grid > div {
+        min-width: 0;
+      }
+
+      .field-error {
+        min-height: 22px;
+        margin-top: 6px;
+        color: #b91c1c;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .field-help {
+        margin-top: 6px;
+        color: #475569;
+        font-size: 14px;
+        line-height: 1.4;
       }
 
       .buttons {
@@ -83,6 +122,16 @@
 
       button:hover {
         background: #1d4ed8;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        filter: grayscale(0.35);
+      }
+
+      button:disabled:hover {
+        background: #2563eb;
       }
 
       button.secondary {
@@ -117,6 +166,69 @@
         border-radius: 10px;
         font-size: 19px;
         font-family: Consolas, monospace;
+        overflow-wrap: anywhere;
+      }
+
+      .run-options {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: end;
+        margin-top: 18px;
+      }
+
+      .progress-block {
+        min-width: 0;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      progress {
+        display: block;
+        width: 100%;
+        height: 14px;
+        border: 0;
+        border-radius: 999px;
+        overflow: hidden;
+        appearance: none;
+        background: #e2e8f0;
+        accent-color: #16a34a;
+      }
+
+      progress::-webkit-progress-bar {
+        background: #e2e8f0;
+      }
+
+      progress::-webkit-progress-value {
+        border-radius: 999px;
+        background: #16a34a;
+      }
+
+      progress::-moz-progress-bar {
+        border-radius: 999px;
+        background: #16a34a;
+      }
+
+      .speed-control label {
+        margin: 0 0 7px;
+        font-size: 14px;
+      }
+
+      select {
+        min-width: 130px;
+        padding: 8px 10px;
+        border: 2px solid #cbd5e1;
+        border-radius: 9px;
+        background: white;
+        font-size: 15px;
       }
 
       .section {
@@ -200,7 +312,7 @@
         animation: cutShake 0.45s ease;
       }
 
-      .char-box.separator::after {
+      .char-box.separator-start::after {
         content: "✂";
         position: absolute;
         top: -28px;
@@ -348,6 +460,34 @@
         word-break: break-word;
       }
 
+      .keyboard-hint {
+        margin: 10px 0 0;
+        text-align: center;
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      kbd {
+        display: inline-block;
+        padding: 2px 7px;
+        border: 1px solid #94a3b8;
+        border-bottom-width: 3px;
+        border-radius: 5px;
+        background: white;
+        color: #334155;
+        font-family: Consolas, monospace;
+      }
+
+      .concept-note {
+        margin-top: 18px;
+        padding: 12px 14px;
+        border: 1px solid #fdba74;
+        border-radius: 10px;
+        background: #fff7ed;
+        color: #7c2d12;
+        line-height: 1.6;
+      }
+
       .examples {
         margin-top: 20px;
         background: #f8fafc;
@@ -377,16 +517,49 @@
           grid-template-columns: 1fr;
         }
 
+        .run-options {
+          grid-template-columns: 1fr;
+          align-items: stretch;
+        }
+
+        .speed-control select {
+          width: 100%;
+        }
+
         .char-box {
           width: 42px;
           height: 54px;
+        }
+
+        h1 {
+          font-size: clamp(25px, 8vw, 34px);
+        }
+
+        h2 {
+          font-size: 21px;
+        }
+
+        .example-buttons button {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
       }
     </style>
   </head>
 
   <body>
-    <div class="container">
+    <main class="container">
       <h1>Minh họa từng bước hàm split(sep)</h1>
 
       <div class="note">
@@ -397,35 +570,90 @@
 
       <div class="input-row">
         <div>
-          <label>Chuỗi gốc s:</label>
-          <input id="inputString" value="cam,,tao,chuoi," />
+          <label for="inputString">Chuỗi gốc s:</label>
+          <input
+            id="inputString"
+            value=""
+            autocomplete="off"
+            spellcheck="false"
+          />
         </div>
 
         <div>
-          <label>Tham số sep:</label>
-          <input id="separatorInput" value="," />
+          <label for="separatorInput">Tham số sep:</label>
+          <input
+            id="separatorInput"
+            value=""
+            placeholder=""
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="separatorHelp separatorError"
+          />
+          <div class="field-help" id="separatorHelp">
+            Để trống ô này để mô phỏng <code>s.split()</code> không tham số.
+          </div>
+          <div class="field-error" id="separatorError" role="alert"></div>
         </div>
       </div>
 
       <div class="examples">
         <b>Ví dụ nhanh:</b>
         <div class="example-buttons">
-          <button onclick="setExample('cam,tao,chuoi', ',')">
+          <button type="button" onclick="setExample('cam,tao,chuoi', ',')">
             cam,tao,chuoi
           </button>
-          <button onclick="setExample('cam,,tao,chuoi,', ',')">
+          <button type="button" onclick="setExample('cam,,tao,chuoi,', ',')">
             cam,,tao,chuoi,
           </button>
-          <button onclick="setExample('-cam-tao-', '-')">-cam-tao-</button>
-          <button onclick="setExample('duongdi-vatcan-duongdi', '-')">
+          <button type="button" onclick="setExample('-cam-tao-', '-')">
+            -cam-tao-
+          </button>
+          <button
+            type="button"
+            onclick="setExample('duongdi-vatcan-duongdi', '-')"
+          >
             duongdi-vatcan-duongdi
           </button>
-          <button onclick="setExample('aXXbXXc', 'XX')">aXXbXXc</button>
-          <button onclick="setExample('aXXXXb', 'XX')">aXXXXb</button>
+          <button type="button" onclick="setExample('aXXbXXc', 'XX')">
+            aXXbXXc
+          </button>
+          <button type="button" onclick="setExample('aXXXXb', 'XX')">
+            aXXXXb
+          </button>
+          <button
+            type="button"
+            onclick="setExample('  hoc   Python   vui  ', '')"
+          >
+            split() khoảng trắng
+          </button>
         </div>
       </div>
 
       <div class="code" id="codeBox">s.split(",")</div>
+
+      <div class="run-options">
+        <div class="progress-block">
+          <div class="progress-label">
+            <span>Tiến độ quét</span>
+            <span id="progressText">0 / 0 kí tự</span>
+          </div>
+          <progress
+            id="progressBar"
+            value="0"
+            max="1"
+            aria-label="Tiến độ quét chuỗi"
+          ></progress>
+        </div>
+
+        <div class="speed-control">
+          <label for="autoSpeed">Tốc độ tự động:</label>
+          <select id="autoSpeed">
+            <option value="1200">Chậm</option>
+            <option value="800" selected>Vừa</option>
+            <option value="450">Nhanh</option>
+          </select>
+        </div>
+      </div>
 
       <div class="section">
         <div class="title-row">
@@ -435,13 +663,47 @@
       </div>
 
       <div class="buttons">
-        <button onclick="startDemo()">Bắt đầu lại</button>
-        <button class="green" onclick="nextStep()">Bước tiếp theo</button>
-        <button class="secondary" onclick="autoRun()">Chạy tự động</button>
-        <button class="danger" onclick="stopAuto()">Dừng</button>
+        <button type="button" id="resetButton" onclick="startDemo()">
+          Bắt đầu lại
+        </button>
+        <button
+          type="button"
+          id="nextButton"
+          class="green"
+          onclick="nextStep()"
+        >
+          Bước tiếp theo
+        </button>
+        <button
+          type="button"
+          id="autoButton"
+          class="secondary"
+          onclick="autoRun()"
+        >
+          Chạy tự động
+        </button>
+        <button
+          type="button"
+          id="stopButton"
+          class="danger"
+          onclick="stopAuto()"
+        >
+          Dừng
+        </button>
       </div>
 
-      <div class="step-info" id="stepInfo">
+      <p class="keyboard-hint">
+        Phím tắt: <kbd>→</kbd> hoặc <kbd>Space</kbd> để đi tiếp, <kbd>R</kbd> để
+        bắt đầu lại.
+      </p>
+
+      <div
+        class="step-info"
+        id="stepInfo"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         Bấm <b>Bắt đầu lại</b>, sau đó bấm <b>Bước tiếp theo</b> để quan sát quá
         trình split.
       </div>
@@ -458,12 +720,26 @@
         </div>
       </div>
 
-      <div class="python-output" id="pythonOutput">Kết quả kiểu Python: []</div>
-    </div>
+      <div class="python-output" id="pythonOutput" aria-live="polite">
+        Kết quả kiểu Python: []
+      </div>
+
+      <div class="concept-note">
+        <b>Ghi nhớ:</b> nếu có <code>sep</code>, dấu phân cách không xuất hiện
+        trong kết quả và các dấu phân cách liền nhau có thể tạo phần tử rỗng
+        <code>''</code>. Nếu để trống <code>sep</code>, Python dùng
+        <code>split()</code>: tách theo khoảng trắng, gộp nhiều khoảng trắng
+        liên tiếp và bỏ khoảng trắng ở đầu/cuối chuỗi.
+      </div>
+    </main>
 
     <script>
       let state = null;
       let timer = null;
+
+      function byId(id) {
+        return document.getElementById(id);
+      }
 
       function escapeHTML(text) {
         return text
@@ -472,34 +748,54 @@
           .replaceAll(">", "&gt;");
       }
 
+      function pythonRepr(text) {
+        return (
+          "'" +
+          text
+            .replaceAll("\\", "\\\\")
+            .replaceAll("\r", "\\r")
+            .replaceAll("\n", "\\n")
+            .replaceAll("\t", "\\t")
+            .replaceAll("'", "\\'") +
+          "'"
+        );
+      }
+
       function displayChar(ch) {
         if (ch === " ") return "␠";
         if (ch === "\t") return "⇥";
+        if (ch === "\n") return "↵";
         return ch;
       }
 
+      function isWhitespace(ch) {
+        return /\s/u.test(ch);
+      }
+
       function setExample(s, sep) {
-        document.getElementById("inputString").value = s;
-        document.getElementById("separatorInput").value = sep;
+        byId("inputString").value = s;
+        byId("separatorInput").value = sep;
         startDemo();
+      }
+
+      function setSeparatorError(message) {
+        const input = byId("separatorInput");
+        byId("separatorError").innerText = message;
+        input.setAttribute("aria-invalid", message ? "true" : "false");
       }
 
       function startDemo() {
         stopAuto();
 
-        const s = document.getElementById("inputString").value;
-        const sep = document.getElementById("separatorInput").value;
+        const s = byId("inputString").value;
+        const sep = byId("separatorInput").value;
 
-        if (sep === "") {
-          alert(
-            "Trong Python, split('') bị lỗi. Tham số sep không được là xâu rỗng.",
-          );
-          return;
-        }
+        setSeparatorError("");
 
         state = {
           s: s,
           sep: sep,
+          splitWithoutSep: sep === "",
           i: 0,
           buffer: "",
           parts: [],
@@ -509,11 +805,15 @@
             type: "start",
             index: 0,
             length: 0,
-            text: "Bắt đầu quét chuỗi từ trái sang phải.",
+            text:
+              sep === ""
+                ? "Bắt đầu quét chuỗi theo chế độ <code>split()</code>: khoảng trắng dùng để tách, nhưng không tạo phần tử rỗng."
+                : "Bắt đầu quét chuỗi từ trái sang phải.",
           },
         };
 
         render();
+        return true;
       }
 
       function nextStep() {
@@ -534,6 +834,11 @@
         const i = state.i;
 
         state.step++;
+
+        if (state.splitWithoutSep) {
+          nextWhitespaceSplitStep();
+          return;
+        }
 
         // Khi đã quét hết chuỗi, đưa mảnh cuối cùng vào list
         if (i >= s.length) {
@@ -590,6 +895,80 @@
         render();
       }
 
+      function nextWhitespaceSplitStep() {
+        const s = state.s;
+        const i = state.i;
+
+        if (i >= s.length) {
+          const finalPart = state.buffer;
+
+          if (finalPart !== "") {
+            state.parts.push(finalPart);
+            state.lastAction = {
+              type: "finish",
+              index: i,
+              length: 0,
+              part: finalPart,
+              text: `Đã quét hết chuỗi. Đưa mảnh cuối cùng <b>${showPart(finalPart)}</b> vào list kết quả.`,
+            };
+          } else {
+            state.lastAction = {
+              type: "finish",
+              index: i,
+              length: 0,
+              part: finalPart,
+              text: "Đã quét hết chuỗi. Không còn mảnh nào đang gom, nên <code>split()</code> không thêm phần tử rỗng.",
+            };
+          }
+
+          state.buffer = "";
+          state.done = true;
+          render();
+          return;
+        }
+
+        const ch = s[i];
+
+        if (isWhitespace(ch)) {
+          if (state.buffer !== "") {
+            const cutPart = state.buffer;
+            state.parts.push(cutPart);
+            state.buffer = "";
+
+            state.lastAction = {
+              type: "whitespace-cut",
+              index: i,
+              length: 1,
+              part: cutPart,
+              text: `Gặp khoảng trắng <b>"${escapeHTML(displayChar(ch))}"</b> tại vị trí ${i}. Với <code>split()</code>, đây là điểm tách nên đưa <b>${showPart(cutPart)}</b> vào list kết quả.`,
+            };
+          } else {
+            state.lastAction = {
+              type: "whitespace-skip",
+              index: i,
+              length: 1,
+              text: `Gặp khoảng trắng <b>"${escapeHTML(displayChar(ch))}"</b> tại vị trí ${i}, nhưng chưa gom được kí tự nào. <code>split()</code> bỏ qua khoảng trắng ở đầu hoặc các khoảng trắng liền nhau.`,
+            };
+          }
+
+          state.i++;
+          render();
+          return;
+        }
+
+        state.buffer += ch;
+        state.lastAction = {
+          type: "read",
+          index: i,
+          length: 1,
+          char: ch,
+          text: `Kí tự <b>"${escapeHTML(displayChar(ch))}"</b> không phải khoảng trắng, nên đưa vào mảnh đang gom.`,
+        };
+
+        state.i++;
+        render();
+      }
+
       function showPart(part) {
         if (part === "") return "<span style='color:#dc2626'>''</span>";
         return `"${escapeHTML(part)}"`;
@@ -598,24 +977,27 @@
       function render() {
         if (!state) return;
 
-        document.getElementById("codeBox").innerText =
-          `s.split("${state.sep}")`;
+        byId("codeBox").innerText = state.splitWithoutSep
+          ? "s.split()"
+          : `s.split(${pythonRepr(state.sep)})`;
 
         renderString();
         renderBuffer();
         renderResult();
         renderPythonOutput();
+        renderProgress();
 
-        document.getElementById("stepInfo").innerHTML =
+        byId("stepInfo").innerHTML =
           `<b>Bước ${state.step}:</b> ${state.lastAction.text}`;
+        updateControls();
       }
 
       function renderMessage(message) {
-        document.getElementById("stepInfo").innerHTML = message;
+        byId("stepInfo").innerHTML = message;
       }
 
       function renderString() {
-        const view = document.getElementById("stringView");
+        const view = byId("stringView");
         view.innerHTML = "";
 
         const s = state.s;
@@ -645,12 +1027,15 @@
           }
 
           if (
-            last.type === "cut" &&
+            ["cut", "whitespace-cut", "whitespace-skip"].includes(last.type) &&
             idx >= last.index &&
             idx < last.index + last.length
           ) {
             box.classList.remove("done");
             box.classList.add("separator");
+            if (idx === last.index) {
+              box.classList.add("separator-start");
+            }
           }
 
           box.innerHTML = `
@@ -663,7 +1048,7 @@
       }
 
       function renderBuffer() {
-        const view = document.getElementById("bufferView");
+        const view = byId("bufferView");
         view.innerHTML = "";
 
         if (state.buffer === "") {
@@ -680,7 +1065,7 @@
       }
 
       function renderResult() {
-        const view = document.getElementById("resultView");
+        const view = byId("resultView");
         view.innerHTML = "";
 
         if (state.parts.length === 0) {
@@ -704,35 +1089,52 @@
       }
 
       function renderPythonOutput() {
-        const output =
-          "[" +
-          state.parts
-            .map((part) => {
-              return (
-                "'" + part.replaceAll("\\", "\\\\").replaceAll("'", "\\'") + "'"
-              );
-            })
-            .join(", ") +
-          "]";
+        const output = "[" + state.parts.map(pythonRepr).join(", ") + "]";
 
-        document.getElementById("pythonOutput").innerText =
+        byId("pythonOutput").innerText =
           "Kết quả hiện tại kiểu Python: " + output;
+      }
+
+      function renderProgress() {
+        const total = state.s.length;
+        const progress = byId("progressBar");
+        progress.max = Math.max(total, 1);
+        progress.value = state.done
+          ? Math.max(total, 1)
+          : Math.min(state.i, total);
+        byId("progressText").innerText =
+          `${Math.min(state.i, total)} / ${total} kí tự` +
+          (state.done ? " · hoàn thành" : "");
+      }
+
+      function updateControls() {
+        const isRunning = timer !== null;
+        byId("nextButton").disabled = !state || state.done || isRunning;
+        byId("autoButton").disabled = !state || isRunning;
+        byId("stopButton").disabled = !isRunning;
+        byId("autoButton").innerText =
+          state && state.done ? "Chạy lại tự động" : "Chạy tự động";
       }
 
       function autoRun() {
         if (state === null || state.done) {
-          startDemo();
+          if (!startDemo()) return;
         }
 
         stopAuto();
 
+        const delay = Number(byId("autoSpeed").value);
         timer = setInterval(() => {
           if (!state || state.done) {
             stopAuto();
             return;
           }
           nextStep();
-        }, 900);
+          if (state.done) {
+            stopAuto();
+          }
+        }, delay);
+        updateControls();
       }
 
       function stopAuto() {
@@ -740,7 +1142,38 @@
           clearInterval(timer);
           timer = null;
         }
+        if (byId("nextButton")) {
+          updateControls();
+        }
       }
+
+      byId("inputString").addEventListener("input", startDemo);
+      byId("separatorInput").addEventListener("input", startDemo);
+
+      byId("autoSpeed").addEventListener("change", () => {
+        if (timer !== null) {
+          clearInterval(timer);
+          timer = null;
+          autoRun();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.target instanceof Element &&
+          event.target.matches("input, select, button")
+        ) {
+          return;
+        }
+
+        if (event.key === "ArrowRight" || event.key === " ") {
+          event.preventDefault();
+          nextStep();
+        } else if (event.key.toLowerCase() === "r") {
+          event.preventDefault();
+          startDemo();
+        }
+      });
 
       startDemo();
     </script>
